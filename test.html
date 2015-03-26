@@ -8,17 +8,21 @@
     <body>
         <script>
         var youtube  = $youtube("AIzaSyByRmx5gnlNOoJMX9lqGZrOWbkaI6xcIC0");
-        inf = youtube.getdata("TlgqWeuhJj4");
-        console.log(inf.apikey + inf.title +inf.description +inf.publishedAt);
+        var information = youtube.getdata({
+              videoid: "TlgqWeuhJj4"
+            });
+        console.log("API KEY: "+ information.apikey +" TITLE: "+information.title + " DESCRIPTION:" +information.description + " PUBLISHED AT" +information.publishedAt);
 
       
         console.log(youtube.search("rihanna love",5,"yes","relevance","0","v=3"));
-        var k= youtube.search("rihanna love",5,"yes","relevance","next","v=3");
-        console.log(youtube.standard("top_rated",25,1));
-        youtube.getComments("TlgqWeuhJj4");
-        console.log(youtube.getComments("TlgqWeuhJj4","next"));  
+        console.log(youtube.search("rihanna love",5,"yes","relevance","next","v=3"));
+        //console.log(youtube.standard("top_rated",25,1));
+        var comments = youtube.getComments("TlgqWeuhJj4");
+        var nextcomments = youtube.getComments("TlgqWeuhJj4","next");
         
-        console.log(inf.apikey + inf.title +inf.description +inf.publishedAt);
+        console.log(comments);
+        console.log(nextcomments);
+      
         </script>
     </body>
 </html>

@@ -1,12 +1,15 @@
-(function (window, undefined) {
+(function (window) {
     
-        
     var $youtube = function (apikey) {
        
-      if ( window === this ) {
+        if(window === this ) {
             return new $youtube(apikey);
         }
         
+        this.defaults = {
+           apikey: "",
+           version: ""
+        }; 
         this.apikey = apikey;
         this.version ="1.0";
         this.title = 0;
@@ -24,8 +27,10 @@
    $youtube.fn= $youtube.prototype = {
        
        
-        getdata: function(videoid) {
-          var self = this,myData;
+        getdata: function(options) {
+          var self = this,myData,videoid;
+          
+          videoid = options.videoid;
           
           if(this.apikey === "") { 
             return this.ErrorAll(0);
@@ -326,16 +331,20 @@
             var self = this,myData,comments= {},k;
             if(this.apikey === "") { return this.ErrorAll(0);}
             if(startindex){ 
-            if(startindex>0 && startindex<1000) {} 
-            else if(startindex=="next" && this.comments.index>999) startindex=this.comments.index+25;
-            else if(startindex=="prev" && this.comments.index>0) startindex=this.comments.index-25;
-            else return this.ErrorAll(0);}
-            else {startindex=1;}
+            if(startindex>0 && startindex<1000) {
+              return self.ErrorAll(23);
+            } else if(startindex=="next" && this.comments.index<999) {
+              startindex=this.comments.index+25;
+            } else if(startindex=="prev" && this.comments.index>0) {
+              startindex=this.comments.index-25;
+            } else {
+              return this.ErrorAll(0);
+            }
             console.log(videoid);
             
             
             
-           var myUrl="https://gdata.youtube.com/feeds/api/videos/"+videoid+"/comments?v=2&alt=json&start-index="+startindex;//+"&maxResults="+maxResults;
+            var myUrl="https://gdata.youtube.com/feeds/api/videos/"+videoid+"/comments?v=2&alt=json&start-index="+startindex;//+"&maxResults="+maxResults;
            
            console.log(myUrl);
              $.ajax({
