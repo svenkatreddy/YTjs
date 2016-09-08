@@ -2,7 +2,7 @@
 
 var ytJS = require('./yt-core');
 
-var youtube  = ytJS("AIzaSyByRmx5gnlNOoJMX9lqGZrOWbkaI6xcIC0");
+var youtube  = ytJS("API KEY"); //replace with your API KEY
 
 youtube.getdata({ videoId: "TlgqWeuhJj4"},function(err, result){
     if(err) {
