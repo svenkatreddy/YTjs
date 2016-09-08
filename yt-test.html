@@ -1,25 +1,21 @@
 
 <html>
     <head>
-        
-        <script src="https://www.youtube.com/iframe_api"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script type="text/javascript" src="yt-core.js" ></script>
     </head>
     <body>
         <script>
         var youtube  = $youtube("AIzaSyByRmx5gnlNOoJMX9lqGZrOWbkaI6xcIC0");
-        var information = youtube.getdata({
-              videoId: "TlgqWeuhJj4"
-            },function(err, result){
-                if(err) {
-                  console.log(err);
-                  return false;
-                }
-                console.log(result);
-            });
+        
+        youtube.getdata({ videoId: "TlgqWeuhJj4"},function(err, result){
+            if(err) {
+              console.log(err);
+              return false;
+            }
+            console.log(result);
+        });
             
-        var information = youtube.getdata({ videoId: "PMr2NRPdpH4"}, function(err, result){
+        youtube.getdata({ videoId: "PMr2NRPdpH4"}, function(err, result){
             if(err) {
               console.log(err);
               return false;
@@ -27,26 +23,13 @@
             console.log(result);
         });
         
-        youtube.search({keyword: "rihanna love", fullResults: 1, order: "relevance"}, function(err, data){
+        youtube.search({keyword: "rihanna love", type: "basic", order: "relevance"}, function(err, data){
             if(err) {
               console.log(err);
               return false;
             }
             console.log(data);
         });
-        
-        //console.log(information);    
-        //console.log("API KEY: "+ information.apikey +" TITLE: "+information.title + " DESCRIPTION:" +information.description + " PUBLISHED AT" +information.publishedAt);
-
-      
-        //console.log(youtube.search("rihanna love",5,"yes","relevance","0","v=3"));
-        //console.log(youtube.search("rihanna love",5,"yes","relevance","next","v=3"));
-        //console.log(youtube.standard("top_rated",25,1));
-        //var comments = youtube.getComments("TlgqWeuhJj4");
-        //var nextcomments = youtube.getComments("TlgqWeuhJj4","next");
-        
-        //console.log(comments);
-        //console.log(nextcomments);
       
         </script>
     </body>

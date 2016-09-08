@@ -1,7 +1,31 @@
 YTJS
 ====
 
-Youtube Javascript Library implementing Youtube API V3
+Universal Youtube Javascript Library for Node JS and browser.
+
+No Jquery needed.
+
+
+## How to get Youtube API Key
+
+[Click here](http://help.dimsemenov.com/kb/wordpress-royalslider-tutorials/wp-how-to-get-youtube-api-key)
+
+
+## Node JS 
+
+Example
+    
+    var ytJS = require('./yt-core');
+
+    var youtube  = ytJS("AIzaSyByRmx5gnlNOoJMX9lqGZrOWbkaI6xcIC0"); //API KEY
+    
+    youtube.getdata({ videoId: "TlgqWeuhJj4"},function(err, result){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(result);
+    });
 
 
 Initalize the library
@@ -10,21 +34,41 @@ Initalize the library
 
 Getting the data
 
-     var data = youtube.getdata("Video ID");
-     console.log(data.title); // Video title
-     console.log(data.description); //Video Description
-     console.log(data.publishedAt); // Published at
-     // Many more
+     youtube.getdata({ videoId: "TlgqWeuhJj4" },function(err, result){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(result);
+     });
+            
+    var information = youtube.getdata({ videoId: "PMr2NRPdpH4"}, function(err, result){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(result);
+    });
+    
 
 Searching for Videos
     
-    var test = youtube.search("rihanna",5,"yes","relevance","0","v=3");
-    //returns 5 videos with search term rihanna ordered by relevance 
+    youtube.search({keyword: "rihanna love", fullResults: 1, order: "relevance"}, function(err, data){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(data);
+    });
 
 
-If even one person is interested in this library, i will start working on this.
+## Upcoming Plan
 
-Thanks for all your support. Together we can build next big thing :)
+[] Comments
+
+[] Related Videos
+
+[] npm module
 
 
 

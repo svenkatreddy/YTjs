@@ -1,71 +1,90 @@
-(function (window, $) {
+if(typeof exports === 'object' ) {
+   var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+}
+
+(function (root, factory) {
+	if ( typeof define === 'function' && define.amd ) {
+		define([], factory(root));
+	} else if ( typeof exports === 'object' ) {
+		module.exports = factory(root);
+	} else {
+		root.$youtube = factory(root);
+	}
+})(typeof global !== "undefined" ? global : this.window || this.global, function (root) {
     
     var $youtube = function (apikey) {
        
-        if(window === this) {
-            return new $youtube(apikey);
-        }
+     if(root === this) {
+        return new $youtube(apikey);
+     }
         
-        this.yt = {
-            apikey : apikey,
-            apiUrl : 'https://www.googleapis.com/youtube/v3/',
-            version :"1.0"
-        };
+     this.yt = {
+          apikey : apikey,
+          apiUrl : 'https://www.googleapis.com/youtube/v3/',
+          version :"1.0"
+     };
         
-        this.videoData = {
-            title : "",
-            description : "",
-            rating : "",
-            views : "",
-            publishedAt : "",
-            dthumbnail : "",
-            mthumbnail : "",
-            hthumbnail : "",
-            sthumbnail : "",
-            categoryId : "",
-            channelTitle : "",
-            videoId  : "",
-            duration : "",
-            mins : "",
-            hr : "",
-            secs : "",
-            dimension : "",
-            definition : "",
-            caption : "",
-            licensedContent : "",
-            viewCount : "",
-            likeCount : "",
-            dislikeCount : "",
-            favoriteCount : "",
-            commentCount : "",
-            kind : ""
-          };
+     this.videoData = {
+        title : "",
+        description : "",
+        rating : "",
+        views : "",
+        publishedAt : "",
+        dthumbnail : "",
+        mthumbnail : "",
+        hthumbnail : "",
+        sthumbnail : "",
+        categoryId : "",
+        channelTitle : "",
+        videoId  : "",
+        duration : "",
+        mins : "",
+        hr : "",
+        secs : "",
+        dimension : "",
+        definition : "",
+        caption : "",
+        licensedContent : "",
+        viewCount : "",
+        likeCount : "",
+        dislikeCount : "",
+        favoriteCount : "",
+        commentCount : "",
+        kind : ""
+      };
         
-        this.searchOptions = {};  
+      this.searchOptions = {};  
 
-        return this;
+      return this;
     };
     
-    $youtube.fn= $youtube.prototype = {
+    $youtube.fn = $youtube.prototype = {
        
-        getdata: function(options, callback) {
+        getdata: function(passedOptions, callback) {
           
           var self = this;
-          var myData, videoId;
+          //var deepExtend = self.util.deepExtend;
+          var myData;
+          var defaults = {
+            videoId: "",
+            part: "snippet,statistics,contentDetails"
+          };
           
-          videoId = options.videoId;
-          
-          if(this.apikey === "") { 
-            return this.ErrorAll(0);
+          if(!self.yt.apikey) {
+            callback(self.util.AllErrors(0));
+            return false;
           }
           
-          if(!videoId) { 
-            return this.ErrorAll(1);
+          var options = self.util.deepExtend({}, defaults, passedOptions);
+          
+          if(!options.videoId) {
+            callback(self.util.AllErrors(1));
+            return false;
           }
          
-          var myUrl= self.yt.apiUrl+"videos?id="+videoId+"&part=snippet,statistics,contentDetails&key="+this.yt.apikey;
+          var myUrl= self.yt.apiUrl+"videos?id="+options.videoId+"&part=snippet,statistics,contentDetails&key="+self.yt.apikey;
             
-          ajaxGet({
+          self.util.ajaxGet({
               url: myUrl,
               dataType: 'json',
               async: false,
@@ -76,7 +95,7 @@
                      data = JSON.parse(data);
                  } 
                  
-                 var responseItems = deepExtend({},self.videoData);
+                 var responseItems = self.util.deepExtend({},self.videoData);
         
                  var firstItem = data.items[0];
                  var snippet = firstItem ? firstItem.snippet : "";
@@ -84,13 +103,7 @@
                  var statistics = firstItem.statistics;
                  
                  if(snippet) {
-                     responseItems = deepExtend({}, responseItems, snippet);
-                     /*
-                     responseItems.title= snippet.title;
-                     responseItems.description= snippet.description;
-                     responseItems.publishedAt= snippet.publishedAt;
-                     responseItems.categoryId=  snippet.categoryId;
-                     responseItems.channelTitle= snippet.channelTitle;*/
+                     responseItems = self.util.deepExtend({}, responseItems, snippet);
                  }
                  
                  if(snippet.thumbnails) {
@@ -103,28 +116,16 @@
                  
                 if(contentDetails)  {
                     
-                    responseItems = deepExtend({}, responseItems, contentDetails);
+                    responseItems = self.util.deepExtend({}, responseItems, contentDetails);
                     
-                    /*responseItems.dimension = contentDetails.dimension;
-                    responseItems.efinition = contentDetails.definition;
-                    responseItems.caption = contentDetails.caption;
-                    responseItems.licensedContent = contentDetails.licensedContent;
-                    responseItems.duration = contentDetails.duration;*/
-                    
-                    var dividedTime = divideTime(responseItems.duration);
+                    var dividedTime = self.util.divideTime(responseItems.duration);
                     responseItems.secs = dividedTime[0];
                     responseItems.mins = dividedTime[1];
                     responseItems.hr = dividedTime[2];
                 }
                 
                 if(statistics) {
-                    responseItems = deepExtend({}, responseItems, statistics);
-                    
-                    /*responseItems.viewCount = statistics.viewCount;
-                    responseItems.likeCount = statistics.likeCount;
-                    responseItems.dislikeCount = statistics.dislikeCount;
-                    responseItems.favoriteCount = statistics.favoriteCount;
-                    responseItems.commentCount = statistics.commentCount;*/
+                    responseItems = self.util.deepExtend({}, responseItems, statistics);
                 }
                 
                 responseItems.kind = data.kind;
@@ -146,10 +147,11 @@
         
         search: function(options, callback, keyword, maxResults, fullResults, order, navigate, extraparam) {
             var i;
-            var self = this,myData,videos= {},k;
+            var self = this,myData,videos= {};
+            /*var deepExtend = self.util.deepExtend;*/
             var defaults = {
                 maxResults : 25,
-                getAllVideosMetaInfo : false,
+                type : "basic",
                 order : "Relevance",
                 extraparam : "",
                 navigate: "",
@@ -159,24 +161,24 @@
             
             
             if(self.apikey === "") { 
-                callback(self.ErrorAll(0));
+                callback(self.util.AllErrors(0));
                 return false;
             }
             
             if(!options) {
-                callback(self.ErrorAll(111));
+                callback(self.util.AllErrors(111));
                 return false;
             }
             
             if(!options.keyword) { 
-                callback(self.ErrorAll(2));
+                callback(self.util.AllErrors(2));
                 return false;
             }
             
-            options = deepExtend({}, defaults, options);
+            options = self.util.deepExtend({}, defaults, options);
             
             if(options.maxResults > 50 || options.maxResults < 1) {
-                callback(self.ErrorAll(12));
+                callback(self.util.AllErrors(12));
                 return false;
             } 
             
@@ -201,7 +203,7 @@
                        navigate = "&pageToken=" + self.searchOptions.nextPageToken;
                     }   
                     else { 
-                        callback(self.ErrorAll(21));
+                        callback(self.util.AllErrors(21));
                         return false;
                     }
                     
@@ -212,7 +214,7 @@
                         navigate = "&pageToken=" + self.searchOptions.prevPageToken ;
                     }
                     else { 
-                        callback(self.ErrorAll(21));
+                        callback(self.util.AllErrors(21));
                         return false;
                     }
                 }
@@ -222,8 +224,7 @@
             
            var myUrl = self.yt.apiUrl + "search?part=snippet"+options.navigate+"&q="+options.keyword+"&maxResults="+options.maxResults+"&order="+options.order+"&key="+self.yt.apikey+options.extraparam;
            
-           console.log(myUrl);
-             ajaxGet({
+             self.util.ajaxGet({
               url: myUrl,
               dataType: 'json',
               async: false,
@@ -239,7 +240,7 @@
                   totalResults = data.pageInfo.totalResults;
                   
                   if(totalResults == 0) {
-                      callback(self.ErrorAll(13));
+                      callback(self.util.AllErrors(13));
                       return false;
                   }
                   
@@ -251,61 +252,25 @@
                   response.totalResults = totalResults;
                   
                   for(i=0; i<itemsLength; i++) {
-                      videos[i]={};     
-                      videos[i] = items[i].snippet;
-                      videos[i].videoId = items[i].id.videoId;
-                  
-                          /*if(fullResults!=1)
-                          {
-                         
-                          if(data.items[i].snippet.thumbnails.default)    
-                          videos[i].dthumbnail= data.items[i].snippet.thumbnails.default.url;
-                          else videos[i].dthumbnail=undefined;
-                          
-                          if(data.items[i].snippet.thumbnails.medium) 
-                          videos[i].mthumbnail= data.items[i].snippet.thumbnails.medium.url;
-                          else videos[i].mthumbnail=undefined;
-                          
-                          if(data.items[i].snippet.thumbnails.high) 
-                          videos[i].hthumbnail= data.items[i].snippet.thumbnails.high.url;
-                          else videos[i].hthumbnail=undefined;
-                          
-                          if(data.items[i].snippet.thumbnails.standard) 
-                          videos[i].sthumbnail= data.items[i].snippet.thumbnails.standard.url;
-                          else videos[i].sthumbnail=undefined;
-                          }
-                          
-                          else
-                          {*/
+                      
+                    videos[i]={};     
+                    videos[i] = items[i].snippet;
+                    videos[i].videoId = items[i].id.videoId;
                          
                         
-                        if(options.getAllVideosMetaInfo) {
-                          var videosReturned = 0;
-                          self.getdata({videoId: videos[i].videoId}, function(err, videoData){
-                             if(err) {
-                               callback(err, response);
-                               console.log(err);
-                             }
-                             console.log(videoData);
-                             videos[i] = videoData;
-                             videosReturned = videosReturned + 1;
-                             
-                             console.log(videosReturned);
-                             console.log(itemsLength);
-                             
-                             if(itemsLength === videosReturned) {
-                                if(data.nextPageToken) self.searchOptions.nextPageToken = data.nextPageToken;
-                                if(data.prevPageToken) self.searchOptions.prevPageToken = data.prevPageToken;
-                                
-                                response.prevPageToken = data.prevPageToken;
-                                response.nextPageToken = data.nextPageToken;
-                                response.videos = videos;
-                                response.raw = data;
-                            
-                                callback(null, response);
-                             }
-                          });
-                        } else if(i === itemsLength -1) {
+                    if(options.type.toLowerCase() === "detailed") {
+                      var videosReturned = 0;
+                      self.getdata({videoId: videos[i].videoId}, function(err, videoData){
+                         if(err) {
+                           callback(err, response);
+                           console.log(err);
+                         }
+                         
+                         videos[i] = videoData;
+                         videosReturned = videosReturned + 1;
+                         
+                         
+                         if(itemsLength === videosReturned) {
                             if(data.nextPageToken) self.searchOptions.nextPageToken = data.nextPageToken;
                             if(data.prevPageToken) self.searchOptions.prevPageToken = data.prevPageToken;
                             
@@ -313,42 +278,21 @@
                             response.nextPageToken = data.nextPageToken;
                             response.videos = videos;
                             response.raw = data;
-                            
-                            callback(null, response);
-                        }
-                          
                         
-                             
-                             /*videos[i].title = k.title;
-                             videos[i].description = k.description;
-                             videos[i].rating=k.rating;
-                             videos[i].views=k.views;
-                             videos[i].publishedAt=k.publishedAt;
-                             videos[i].dthumbnail=k.dthumbnail;
-                             videos[i].mthumbnail=k.mthumbnail;
-                             videos[i].hthumbnail=k.hthumbnail;
-                             videos[i].sthumbnail=k.sthumbnail;
-                             videos[i].categoryId=k.categoryId;
-                             videos[i].channelTitle=k.channelTitle;
-                             
-                
-                             
-                             videos[i].duration=k.duration;
-                             videos[i].hr=k.hr;
-                             videos[i].mins=k.mins;
-                             videos[i].secs=k.secs;
-                             videos[i].dimension=k.dimension;
-                             videos[i].definition=k.definition;
-                             videos[i].caption=k.caption;
-                             videos[i].licensedContent=k.licensedContent;
-                             
-                             videos[i].viewCount=k.viewCount;
-                             videos[i].likeCount=k.likeCount;
-                             videos[i].dislikeCount=k.dislikeCount;
-                             videos[i].favoriteCount=k.favoriteCount;
-                             videos[i].commentCount=k.commentCount;
-                          
-                          /*}*/
+                            callback(null, response);
+                         }
+                      });
+                    } else if(i === itemsLength -1) {
+                        if(data.nextPageToken) self.searchOptions.nextPageToken = data.nextPageToken;
+                        if(data.prevPageToken) self.searchOptions.prevPageToken = data.prevPageToken;
+                        
+                        response.prevPageToken = data.prevPageToken;
+                        response.nextPageToken = data.nextPageToken;
+                        response.videos = videos;
+                        response.raw = data;
+                        
+                        callback(null, response);
+                    }
     
                   }
                   
@@ -356,76 +300,106 @@
              });
             
 
-          },
-   }
-  window.$youtube = $youtube;
-})(window, jQuery);
-
-function divideTime(duration){
-    var matches = duration.match(/\d+\.?\d*/g);
-    var length=matches.length;
-    var secs, mins, hr;
-    secs=parseInt(matches[length-1]);
-    if(length>1) mins=parseInt(matches[length-2]); else mins=0;
-    if(length>2) hr=parseInt(matches[length-3]); else hr=0;
-    return [secs, mins, hr];
-};
-
-function ajaxGet(options) {
-  if( !options ) {
-    return false;  
-  }
-  
-  if(!options.url) {
-    return false;  
-  }
-  
-  if(!options.success) {
-      options.success = function(){}
-  }
-  
-  if(!options.fail) {
-      options.fail = function(){}
-  }
-  var request = new XMLHttpRequest();
-
-  request.open('GET', options.url, true);
-    
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        var resp = request.responseText;
-        options.success(resp);
-      } else {
-        options.fail(request);
-      }
+          }
     };
     
-    request.onerror = function() {
-      // There was a connection error of some sort
+    $youtube.prototype.util = {
+        
+        AllErrors: function(errno) {
+        
+            var errors ={
+                "0":["NO_API_KEY", "Please Provide Api Key using object.apikey (or) inside $youtube(apikey)"],
+                "1":["NO_VIDEO_ID", "Please Supply video id while calling the function ex:getdata(videoid)"],
+                "11":["NO_KEYWORD", "Please Provide Keyword to search"],
+                "12":["MAX_RESULTS_OUT_OF_RANGE", "Please Enter Valid maxResults value ranging from 0 to 50"],
+                "13":["OUT_OF_RANGE", "Less than zero values"],
+                "21":["NO_NEXT_PAGE", "No Next Page"],
+                "22":["NO_PREV_PAGE", "No Previous Page"],
+                "23":["INVALID_INDEX_OUT_OF_RANGE", "Please enter valid start index, it shoukd range from 1 to 999"]
+            };
+            
+            var errormsg ={};
+            
+            errormsg.type = errors[errno][0];
+            errormsg.msg = errors[errno][1];
+            errormsg.number = errno;
+            
+            return errormsg;
+        },
+        
+        divideTime : function(duration) {
+            var matches = duration.match(/\d+\.?\d*/g);
+            var length=matches.length;
+            var secs, mins, hr;
+            secs=parseInt(matches[length-1]);
+            if(length>1) mins=parseInt(matches[length-2]); else mins=0;
+            if(length>2) hr=parseInt(matches[length-3]); else hr=0;
+            return [secs, mins, hr];
+        },
+        
+        ajaxGet : function(options) {
+          if( !options ) {
+            return false;  
+          }
+          
+          if(!options.url) {
+            return false;  
+          }
+          
+          if(!options.success) {
+              options.success = function(){}
+          }
+          
+          if(!options.fail) {
+              options.fail = function(){}
+          }
+          var request = new XMLHttpRequest();
+        
+          request.open('GET', options.url, true);
+            
+            request.onload = function() {
+              if (request.status >= 200 && request.status < 400) {
+                // Success!
+                var resp = request.responseText;
+                options.success(resp);
+              } else {
+                options.fail(request);
+              }
+            };
+            
+            request.onerror = function() {
+              // There was a connection error of some sort
+            };
+            
+            request.send(); 
+        },
+        
+        deepExtend : function(out) {
+          out = out || {};
+          
+        
+          for (var i = 1; i < arguments.length; i++) {
+            var obj = arguments[i];
+        
+            if (!obj)
+              continue;
+        
+            for (var key in obj) {
+              if (obj.hasOwnProperty(key)) {
+                if (typeof obj[key] === 'object')
+                  out[key] = this.deepExtend(out[key], obj[key]);
+                else
+                  out[key] = obj[key];
+              }
+            }
+          }
+        
+          return out;
+        }
     };
-    
-    request.send(); 
-};
+   
+   return $youtube;
+  
+});
 
-var deepExtend = function(out) {
-  out = out || {};
 
-  for (var i = 1; i < arguments.length; i++) {
-    var obj = arguments[i];
-
-    if (!obj)
-      continue;
-
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        if (typeof obj[key] === 'object')
-          out[key] = deepExtend(out[key], obj[key]);
-        else
-          out[key] = obj[key];
-      }
-    }
-  }
-
-  return out;
-};

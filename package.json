@@ -1,0 +1,31 @@
+{
+  "name": "ytJS",
+  "version": "1.0.0",
+  "description": "Youtube client library for nodeJS,AMD and browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/svenkatreddy/YTjs.git"
+  },
+  "keywords": [
+    "ytjs",
+    "youtube",
+    "v3",
+    "data-api",
+    "you",
+    "tube",
+    "yt"
+  ],
+  "author": "Venkat Reddy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/svenkatreddy/YTjs/issues"
+  },
+  "homepage": "https://github.com/svenkatreddy/YTjs",
+  "dependencies": {
+    "xmlhttprequest": "^1.8.0"
+  }
+}
