@@ -109,8 +109,24 @@ You can get wide variety of data from `getdata` method and always youtube origin
     "localized":{}
     "projection":
     "raw":{}
+    
+
+### search
+
+1. keyword : keyword for search
+2. order: "relevance"  // date, rating, viewCount, videoCount, title
+3. type : "basic" // "detailed" will provide additional information for each search video
+4. navigate : "next" // would render next set of results as youtube only allows 50 videos at a time
 
 
+#### output format 
+
+You can get wide variety of data from `search` method. Results of search will be returned in `videos` array and always youtube original data can be referred in `raw`
+
+    "videos" : []
+    nextPageToken:
+    prevPageToken:
+    kind:
     
 
 
