@@ -1,6 +1,6 @@
 'use strict';
 
-var ytJS = require('./yt-core');
+var ytJS = require('./');
 
 var youtube  = ytJS("API KEY"); //replace with your API KEY
 
