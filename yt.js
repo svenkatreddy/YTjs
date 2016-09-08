@@ -18,8 +18,6 @@
         this.views = 0;
         this.videos={};
 
-    
-        
         
     return this;
     };
@@ -28,6 +26,7 @@
        
        
         getdata: function(options) {
+          
           var self = this,myData,videoid;
           
           videoid = options.videoid;
@@ -138,7 +137,7 @@
         },
         
         
-          search: function(keyword,maxResults,fullResults,order,navigate,extraparam) {
+        search: function(keyword,maxResults,fullResults,order,navigate,extraparam) {
             var i;
             var self = this,myData,videos= {},k;
             if(this.apikey === "") { return this.ErrorAll(0);}
@@ -248,7 +247,8 @@
 
           },
           
-          standard: function(type,startindex,maxResults) {
+        
+        standard: function(type,startindex,maxResults) {
             var i;
             var self = this,myData,videos= {0:{},1:{}},k;
             if(this.apikey === "") { return this.ErrorAll(0);}
@@ -326,12 +326,11 @@
           },
           
           
-           getComments: function(videoid,startindex) {
+        getComments: function(videoid,startindex) {
             var i;
             var self = this,myData,comments= {},k;
             if(this.apikey === "") { return this.ErrorAll(0);}
-            if(startindex){ 
-            if(startindex>0 && startindex<1000) {
+            if(startindex && startindex>0 && startindex<1000) {
               return self.ErrorAll(23);
             } else if(startindex=="next" && this.comments.index<999) {
               startindex=this.comments.index+25;
@@ -387,7 +386,7 @@
           
           
           
-         clearAll: function() {
+        clearAll: function() {
              var  self=this;
              self.title = undefined;
              self.content = undefined;
@@ -423,45 +422,45 @@
           },
           
           
-           ErrorAll: function(errno) {
-            
-            
-            var errors ={
-                        "0":"Please Provide Api Key using object.apikey (or) inside $youtube(apikey)",
-                        "1":"Please Supply video id while calling the function ex:getdata(videoid)",
-                        "11":"Please Provide Keyword to search",
-                        "12":"Please Enter Valid maxResults value ranging from 0 to 50",
-                        "13":"Less than zero values",
-                        "21":"No Next Page",
-                        "22":"No Previous Page",
-                        "23":"Please enter valid start index, it shoukd range from 1 to 999"
-            };
-            
-            var errormsg ={};
-            errormsg.error =errors[errno];
-            errormsg.errorno =errno;
-            
-            return errormsg;
-            
-          },
-          
-          
-           availableOptions: function(no) {
-            
-            
-            var available ={
-                        "0":"top_favorites most_shared most_popular most_recent most_discussed most_responded recently_featured on_the_web",
-                        "11":"Please Provide Keyword to search",
-                        "21":"No Next Page",
-                        "22":"No Previous Page"
-            };
-            
-            var returnavaiable ={};
-            returnavaiable.options =available[no];
-            
-            return returnavaiable;
-            
-          }
+       ErrorAll: function(errno) {
+        
+        
+        var errors ={
+                    "0":"Please Provide Api Key using object.apikey (or) inside $youtube(apikey)",
+                    "1":"Please Supply video id while calling the function ex:getdata(videoid)",
+                    "11":"Please Provide Keyword to search",
+                    "12":"Please Enter Valid maxResults value ranging from 0 to 50",
+                    "13":"Less than zero values",
+                    "21":"No Next Page",
+                    "22":"No Previous Page",
+                    "23":"Please enter valid start index, it shoukd range from 1 to 999"
+        };
+        
+        var errormsg ={};
+        errormsg.error =errors[errno];
+        errormsg.errorno =errno;
+        
+        return errormsg;
+        
+      },
+      
+      
+       availableOptions: function(no) {
+        
+        
+        var available ={
+                    "0":"top_favorites most_shared most_popular most_recent most_discussed most_responded recently_featured on_the_web",
+                    "11":"Please Provide Keyword to search",
+                    "21":"No Next Page",
+                    "22":"No Previous Page"
+        };
+        
+        var returnavaiable ={};
+        returnavaiable.options =available[no];
+        
+        return returnavaiable;
+        
+      }
          
         
         
