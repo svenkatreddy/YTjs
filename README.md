@@ -69,46 +69,46 @@ Searching for Videos
 ### getdata
 
 1. videoId : youtube video id
-2. part: "snippet,statistics,contentDetails"  // you can pass either of three or all
+2. part: "snippet,statistics,contentDetails"  // you can pass either of three orcombination or all
 
 
 #### output format 
 
 You can get wide variety of data from `getdata` method and always youtube original data can be referred in `raw`
 
-"title":
-"description":
-"rating":
-"views":"",
-"publishedAt":
-"dthumbnail":
-"mthumbnail":
-"hthumbnail":
-"sthumbnail":
-"categoryId":
-"channelTitle":
-"videoId":"",
-"duration":
-"mins":
-"hr":
-"secs":
-"dimension":
-definition":
-caption":
-licensedContent":
-"viewCount":
-"likeCount":
-"dislikeCount":
-"favoriteCount":
-"commentCount":
-"kind":
-"channelId":
-"thumbnails":{}
-"tags":{}
-"liveBroadcastContent":"none"
-"localized":{}
-"projection":
-"raw":{}
+    "title":
+    "description":
+    "rating":
+    "views":"",
+    "publishedAt":
+    "dthumbnail":
+    "mthumbnail":
+    "hthumbnail":
+    "sthumbnail":
+    "categoryId":
+    "channelTitle":
+    "videoId":"",
+    "duration":
+    "mins":
+    "hr":
+    "secs":
+    "dimension":
+    definition":
+    caption":
+    licensedContent":
+    "viewCount":
+    "likeCount":
+    "dislikeCount":
+    "favoriteCount":
+    "commentCount":
+    "kind":
+    "channelId":
+    "thumbnails":{}
+    "tags":{}
+    "liveBroadcastContent":"none"
+    "localized":{}
+    "projection":
+    "raw":{}
 
 
     
