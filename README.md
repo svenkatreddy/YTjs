@@ -28,6 +28,8 @@ Example
     });
 
 
+## Browser
+
 Initalize the library
 
     var youtube  = $youtube("API KEY");
