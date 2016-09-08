@@ -116,11 +116,11 @@ You can get wide variety of data from `getdata` method and always youtube origin
 
 ## Upcoming Plan
 
-[] Comments
+[ ] Comments
 
-[] Related Videos
+[ ] Related Videos
 
-[] npm module
+[ ] npm module
 
 
 
