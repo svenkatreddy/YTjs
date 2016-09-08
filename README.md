@@ -44,7 +44,7 @@ Getting the data
         console.log(result);
      });
             
-    var information = youtube.getdata({ videoId: "PMr2NRPdpH4"}, function(err, result){
+    youtube.getdata({ videoId: "PMr2NRPdpH4"}, function(err, result){
         if(err) {
           console.log(err);
           return false;
@@ -62,6 +62,56 @@ Searching for Videos
         }
         console.log(data);
     });
+
+## Options
+
+
+### getdata
+
+1. videoId : youtube video id
+2. part: "snippet,statistics,contentDetails"  // you can pass either of three or all
+
+
+#### output format 
+
+You can get wide variety of data from `getdata` method and always youtube original data can be referred in `raw`
+
+"title":
+"description":
+"rating":
+"views":"",
+"publishedAt":
+"dthumbnail":
+"mthumbnail":
+"hthumbnail":
+"sthumbnail":
+"categoryId":
+"channelTitle":
+"videoId":"",
+"duration":
+"mins":
+"hr":
+"secs":
+"dimension":
+definition":
+caption":
+licensedContent":
+"viewCount":
+"likeCount":
+"dislikeCount":
+"favoriteCount":
+"commentCount":
+"kind":
+"channelId":
+"thumbnails":{}
+"tags":{}
+"liveBroadcastContent":"none"
+"localized":{}
+"projection":
+"raw":{}
+
+
+    
 
 
 ## Upcoming Plan
