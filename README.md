@@ -1,4 +1,4 @@
-YTJS
+YTjs
 ====
 
 Universal Youtube Javascript Library for Node JS and browser.
