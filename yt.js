@@ -60,7 +60,7 @@ if(typeof exports === 'object' ) {
     
     $youtube.fn = $youtube.prototype = {
        
-        getdata: function(passedOptions, callback) {
+      getdata: function (passedOptions, callback) {
           
           var self = this;
           //var deepExtend = self.util.deepExtend;
@@ -145,144 +145,130 @@ if(typeof exports === 'object' ) {
             return self;
         },
         
-        search: function(options, callback, keyword, maxResults, fullResults, order, navigate, extraparam) {
-            var i;
-            var self = this,myData,videos= {};
-            /*var deepExtend = self.util.deepExtend;*/
-            var defaults = {
-                maxResults : 25,
-                type : "basic",
-                order : "Relevance",
-                extraparam : "",
-                navigate: "",
-                nextPageToken: "",
-                prevPageToken: ""
-            };
+      search: function (options, callback, keyword, maxResults, fullResults, order, navigate, extraparam) {
+        var self = this, myData, videos= {}, i;
+        var defaults = {
+            maxResults : 25,
+            type : "basic",
+            order : "Relevance",
+            extraparam : "",
+            navigate: "",
+            nextPageToken: "",
+            prevPageToken: ""
+        };
+        
+        
+        if(self.apikey === "") { 
+            callback(self.util.AllErrors(0));
+            return false;
+        }
+        
+        if(!options) {
+            callback(self.util.AllErrors(111));
+            return false;
+        }
+        
+        if(!options.keyword) { 
+            callback(self.util.AllErrors(2));
+            return false;
+        }
+        
+        options = self.util.deepExtend({}, defaults, options);
+        
+        if(options.maxResults > 50 || options.maxResults < 1) {
+            callback(self.util.AllErrors(12));
+            return false;
+        } 
+        
+        if(extraparam) { 
+            extraparam = "&"+extraparam;
+        }
+        
+        if(options.nextPageToken) {
+            self.searchOptions.nextPageToken = options.nextPageToken;
+            options.navigate = "next";
+        }
+        
+        if(options.prevPageToken) {
+            self.searchOptions.prevPageToken = options.prevPageToken;
+            options.navigate = "prev";
+        }
+        
+        if(options.navigate) {
             
-            
-            if(self.apikey === "") { 
-                callback(self.util.AllErrors(0));
-                return false;
-            }
-            
-            if(!options) {
-                callback(self.util.AllErrors(111));
-                return false;
-            }
-            
-            if(!options.keyword) { 
-                callback(self.util.AllErrors(2));
-                return false;
-            }
-            
-            options = self.util.deepExtend({}, defaults, options);
-            
-            if(options.maxResults > 50 || options.maxResults < 1) {
-                callback(self.util.AllErrors(12));
-                return false;
-            } 
-            
-            if(extraparam) { 
-                extraparam = "&"+extraparam;
-            }
-            
-            if(options.nextPageToken) {
-                self.searchOptions.nextPageToken = options.nextPageToken;
-                options.navigate = "next";
-            }
-            
-            if(options.prevPageToken) {
-                self.searchOptions.prevPageToken = options.prevPageToken;
-                options.navigate = "prev";
-            }
-            
-            if(options.navigate) {
+            if (navigate == "next") { 
+                if(self.searchOptions.nextPageToken) {
+                   navigate = "&pageToken=" + self.searchOptions.nextPageToken;
+                }   
+                else { 
+                    callback(self.util.AllErrors(21));
+                    return false;
+                }
                 
-                if (navigate == "next") { 
-                    if(self.searchOptions.nextPageToken) {
-                       navigate = "&pageToken=" + self.searchOptions.nextPageToken;
-                    }   
-                    else { 
-                        callback(self.util.AllErrors(21));
-                        return false;
-                    }
+            }
+            
+            else if (navigate == "prev") { 
+                if(self.searchOptions.prevPageToken) {
+                    navigate = "&pageToken=" + self.searchOptions.prevPageToken ;
+                }
+                else { 
+                    callback(self.util.AllErrors(21));
+                    return false;
+                }
+            }
+        }
+        
+        
+        
+       var myUrl = self.yt.apiUrl + "search?part=snippet"+options.navigate+"&q="+options.keyword+"&maxResults="+options.maxResults+"&order="+options.order+"&key="+self.yt.apikey+options.extraparam;
+       
+         self.util.ajaxGet({
+          url: myUrl,
+          dataType: 'json',
+          async: false,
+          data: myData,
+          success: function(data) {
+              
+              var totalResults;
+              
+              if(typeof data === "string") {
+                 data = JSON.parse(data);
+              }
+              
+              totalResults = data.pageInfo.totalResults;
+              
+              if(totalResults == 0) {
+                  callback(self.util.AllErrors(13));
+                  return false;
+              }
+              
+              var items = data.items;
+              var itemsLength = items.length;
+              var response = {};
+              var videos = [];
+              
+              response.totalResults = totalResults;
+              
+              for(i=0; i<itemsLength; i++) {
+                  
+                videos[i]={};     
+                videos[i] = items[i].snippet;
+                videos[i].videoId = items[i].id.videoId;
+                     
                     
-                }
-                
-                else if (navigate == "prev") { 
-                    if(self.searchOptions.prevPageToken) {
-                        navigate = "&pageToken=" + self.searchOptions.prevPageToken ;
-                    }
-                    else { 
-                        callback(self.util.AllErrors(21));
-                        return false;
-                    }
-                }
-            }
-            
-            
-            
-           var myUrl = self.yt.apiUrl + "search?part=snippet"+options.navigate+"&q="+options.keyword+"&maxResults="+options.maxResults+"&order="+options.order+"&key="+self.yt.apikey+options.extraparam;
-           
-             self.util.ajaxGet({
-              url: myUrl,
-              dataType: 'json',
-              async: false,
-              data: myData,
-              success: function(data) {
-                  
-                  var totalResults;
-                  
-                  if(typeof data === "string") {
-                     data = JSON.parse(data);
-                  }
-                  
-                  totalResults = data.pageInfo.totalResults;
-                  
-                  if(totalResults == 0) {
-                      callback(self.util.AllErrors(13));
-                      return false;
-                  }
-                  
-                  var items = data.items;
-                  var itemsLength = items.length;
-                  var response = {};
-                  var videos = [];
-                  
-                  response.totalResults = totalResults;
-                  
-                  for(i=0; i<itemsLength; i++) {
-                      
-                    videos[i]={};     
-                    videos[i] = items[i].snippet;
-                    videos[i].videoId = items[i].id.videoId;
-                         
-                        
-                    if(options.type.toLowerCase() === "detailed") {
-                      var videosReturned = 0;
-                      self.getdata({videoId: videos[i].videoId}, function(err, videoData){
-                         if(err) {
-                           callback(err, response);
-                           console.log(err);
-                         }
-                         
-                         videos[i] = videoData;
-                         videosReturned = videosReturned + 1;
-                         
-                         
-                         if(itemsLength === videosReturned) {
-                            if(data.nextPageToken) self.searchOptions.nextPageToken = data.nextPageToken;
-                            if(data.prevPageToken) self.searchOptions.prevPageToken = data.prevPageToken;
-                            
-                            response.prevPageToken = data.prevPageToken;
-                            response.nextPageToken = data.nextPageToken;
-                            response.videos = videos;
-                            response.raw = data;
-                        
-                            callback(null, response);
-                         }
-                      });
-                    } else if(i === itemsLength -1) {
+                if(options.type.toLowerCase() === "detailed") {
+                  var videosReturned = 0;
+                  self.getdata({videoId: videos[i].videoId}, function(err, videoData){
+                     if(err) {
+                       callback(err, response);
+                       console.log(err);
+                     }
+                     
+                     videos[i] = videoData;
+                     videosReturned = videosReturned + 1;
+                     
+                     
+                     if(itemsLength === videosReturned) {
                         if(data.nextPageToken) self.searchOptions.nextPageToken = data.nextPageToken;
                         if(data.prevPageToken) self.searchOptions.prevPageToken = data.prevPageToken;
                         
@@ -290,17 +276,103 @@ if(typeof exports === 'object' ) {
                         response.nextPageToken = data.nextPageToken;
                         response.videos = videos;
                         response.raw = data;
-                        
+                    
                         callback(null, response);
-                    }
-    
-                  }
-                  
-               }
-             });
+                     }
+                  });
+                } else if(i === itemsLength -1) {
+                    if(data.nextPageToken) self.searchOptions.nextPageToken = data.nextPageToken;
+                    if(data.prevPageToken) self.searchOptions.prevPageToken = data.prevPageToken;
+                    
+                    response.prevPageToken = data.prevPageToken;
+                    response.nextPageToken = data.nextPageToken;
+                    response.videos = videos;
+                    response.raw = data;
+                    
+                    callback(null, response);
+                }
+
+              }
+              
+           }
+         });
             
 
+      },
+      
+      getComments: function (options, callback) {
+        var self = this, myData, videos= {}, i;
+        var defaults = {
+            maxResults : 25,
+            type : "basic",
+            order : "Relevance",
+            extraparam : "",
+            navigate: "",
+            nextPageToken: "",
+            prevPageToken: "",
+            startindex: 1
+        };
+        
+        
+        if(self.apikey === "") { 
+            callback(self.util.AllErrors(0));
+            return false;
+        }
+        
+        if(!options) {
+            callback(self.util.AllErrors(111));
+            return false;
+        }
+        
+        if(!options.videoId) { 
+            callback(self.util.AllErrors(2));
+            return false;
+        }
+        
+        
+        options = self.util.deepExtend({}, defaults, options);
+        
+        
+        
+        var myUrl= self.yt.apiUrl+"commentThreads?part=snippet&videoId="+options.videoId+"&maxesults="+options.maxResults+"&key="+self.yt.apikey; //+"&maxResults="+maxResults;
+       
+         console.log(myUrl);
+         self.util.ajaxGet({
+          url: myUrl,
+          dataType: 'json',
+          async: false,
+          data: myData,
+          success: function(data) {
+          var entries;
+          
+          console.log(data);
+          entries= data.feed.entry;
+          comments.total=data.feed.openSearch$totalResults['$t'];
+          if(comments.total == 0) {return this.ErrorAll(13);}
+          comments.index=startindex;
+          for(i=0;i<25;i++)
+          {
+          comments[i]={};
+          //console.log(videos);
+          comments[i].title = entries[i].title['$t'];
+          comments[i].content = entries[i].content['$t'];
+          comments[i].publishedAt=entries[i].published['$t'];
+          comments[i].authorName=entries[i].author[0].name['$t'];
+          comments[i].authorUri=entries[i].author[0].uri['$t'];
+          comments[i].authorId=entries[i].author[0].yt$userId['$t'];
+          
+          
           }
+          
+          self.comments =comments;
+          console.log(comments);
+          
+          return comments;
+          }
+         });
+      }
+        
+        
     };
     
     $youtube.prototype.util = {
