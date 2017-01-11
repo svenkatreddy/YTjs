@@ -15,7 +15,7 @@ No Jquery needed.
 
 Example
     
-    var ytJS = require('./yt-core');
+    var ytJS = require('ytjs');
 
     var youtube  = ytJS("API KEY");
     

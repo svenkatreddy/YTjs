@@ -1,6 +1,6 @@
 {
   "name": "ytjs",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Youtube client library for nodeJS, AMD and browser",
   "main": "index.js",
   "scripts": {
