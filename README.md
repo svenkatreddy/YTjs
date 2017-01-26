@@ -30,11 +30,13 @@ Example
 
 ## Browser
 
-Initalize the library
+include yt.js
+
+    <script type="text/javascript" src="yt.js" ></script>
+
+Initalize the library and get Data
 
     var youtube  = $youtube("API KEY");
-
-Getting the data
 
      youtube.getdata({ videoId: "TlgqWeuhJj4" },function(err, result){
         if(err) {
