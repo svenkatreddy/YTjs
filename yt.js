@@ -12,10 +12,10 @@ if(typeof exports === 'object' ) {
 	}
 })(typeof global !== "undefined" ? global : this.window || this.global, function (root) {
     
-    var $youtube = function (apikey) {
+    var $youtube = function (apikey, debug) {
        
      if(root === this) {
-        return new $youtube(apikey);
+        return new $youtube(apikey, debug);
      }
         
      this.yt = {
@@ -53,7 +53,10 @@ if(typeof exports === 'object' ) {
         kind : ""
       };
         
-      this.searchOptions = {};  
+      this.searchOptions = {};
+      this.commentOptions = {};
+      this.debug = debug || false;
+      this.logs = [];
 
       return this;
     };
@@ -70,6 +73,9 @@ if(typeof exports === 'object' ) {
             part: "snippet,statistics,contentDetails"
           };
           
+          self.util.debug(self,'Method: getdata');
+          self.util.debug(self,passedOptions);
+          
           if(!self.yt.apikey) {
             callback(self.util.AllErrors(0));
             return false;
@@ -83,6 +89,7 @@ if(typeof exports === 'object' ) {
           }
          
           var myUrl= self.yt.apiUrl+"videos?id="+options.videoId+"&part=snippet,statistics,contentDetails&key="+self.yt.apikey;
+          self.util.debug(self,myUrl);
             
           self.util.ajaxGet({
               url: myUrl,
@@ -91,9 +98,11 @@ if(typeof exports === 'object' ) {
               data: myData,
               success: function(data) {
                  
+                 self.util.debug(self,data);
+                 
                  if(typeof data === "string") {
                      data = JSON.parse(data);
-                 } 
+                 }
                  
                  var responseItems = self.util.deepExtend({},self.videoData);
         
@@ -145,8 +154,8 @@ if(typeof exports === 'object' ) {
             return self;
         },
         
-      search: function (options, callback, keyword, maxResults, fullResults, order, navigate, extraparam) {
-        var self = this, myData, videos= {}, i;
+      search: function (options, callback) {
+        var self = this, myData, i;
         var defaults = {
             maxResults : 25,
             type : "basic",
@@ -157,6 +166,8 @@ if(typeof exports === 'object' ) {
             prevPageToken: ""
         };
         
+        self.util.debug(self,'Method: search');
+        self.util.debug(self,options);
         
         if(self.apikey === "") { 
             callback(self.util.AllErrors(0));
@@ -180,8 +191,8 @@ if(typeof exports === 'object' ) {
             return false;
         } 
         
-        if(extraparam) { 
-            extraparam = "&"+extraparam;
+        if(options.extraparam) { 
+            options.extraparam = "&"+options.extraparam;
         }
         
         if(options.nextPageToken) {
@@ -196,9 +207,9 @@ if(typeof exports === 'object' ) {
         
         if(options.navigate) {
             
-            if (navigate == "next") { 
+            if (options.navigate == "next") { 
                 if(self.searchOptions.nextPageToken) {
-                   navigate = "&pageToken=" + self.searchOptions.nextPageToken;
+                   options.navigate = "&pageToken=" + self.searchOptions.nextPageToken;
                 }   
                 else { 
                     callback(self.util.AllErrors(21));
@@ -207,9 +218,9 @@ if(typeof exports === 'object' ) {
                 
             }
             
-            else if (navigate == "prev") { 
+            else if (options.navigate == "prev") { 
                 if(self.searchOptions.prevPageToken) {
-                    navigate = "&pageToken=" + self.searchOptions.prevPageToken ;
+                    options.navigate = "&pageToken=" + self.searchOptions.prevPageToken ;
                 }
                 else { 
                     callback(self.util.AllErrors(21));
@@ -222,6 +233,8 @@ if(typeof exports === 'object' ) {
         
        var myUrl = self.yt.apiUrl + "search?part=snippet"+options.navigate+"&q="+options.keyword+"&maxResults="+options.maxResults+"&order="+options.order+"&key="+self.yt.apikey+options.extraparam;
        
+       self.util.debug(self,myUrl);
+       
          self.util.ajaxGet({
           url: myUrl,
           dataType: 'json',
@@ -230,6 +243,9 @@ if(typeof exports === 'object' ) {
           success: function(data) {
               
               var totalResults;
+              
+              self.util.debug(self,'Data success');
+              self.util.debug(self,data);
               
               if(typeof data === "string") {
                  data = JSON.parse(data);
@@ -261,7 +277,7 @@ if(typeof exports === 'object' ) {
                   self.getdata({videoId: videos[i].videoId}, function(err, videoData){
                      if(err) {
                        callback(err, response);
-                       console.log(err);
+                       self.util.debug(self,err);
                      }
                      
                      videos[i] = videoData;
@@ -301,82 +317,130 @@ if(typeof exports === 'object' ) {
       },
       
       getComments: function (options, callback) {
-        var self = this, myData, videos= {}, i;
+        var self = this, myData, i, navigate="";
         var defaults = {
-            maxResults : 25,
-            type : "basic",
-            order : "Relevance",
-            extraparam : "",
-            navigate: "",
-            nextPageToken: "",
-            prevPageToken: "",
-            startindex: 1
+          maxResults : 25,
+          type : "basic",
+          extraparam : "",
+          navigate: "",
+          nextPageToken: "",
+          prevPageToken: "",
+          startindex: 1
         };
         
         
+        self.util.debug(self,'Method: getComments');
+        self.util.debug(self,options);
+        
+        
         if(self.apikey === "") { 
-            callback(self.util.AllErrors(0));
-            return false;
+          callback(self.util.AllErrors(0));
+          return false;
         }
         
         if(!options) {
-            callback(self.util.AllErrors(111));
-            return false;
+          callback(self.util.AllErrors(111));
+          return false;
         }
         
+        options = self.util.deepExtend({}, defaults, options);
+        
         if(!options.videoId) { 
-            callback(self.util.AllErrors(2));
-            return false;
+          callback(self.util.AllErrors(2));
+          return false;
+        }
+        
+        if(options.nextPageToken) {
+            self.searchOptions.nextPageToken = options.nextPageToken;
+            options.navigate = "next";
+        }
+        
+        if(options.prevPageToken) {
+            self.searchOptions.prevPageToken = options.prevPageToken;
+            options.navigate = "prev";
+        }
+        
+        if(options.navigate) {
+            
+            if (options.navigate == "next") { 
+                if(self.commentOptions.nextPageToken) {
+                   navigate = "&pageToken=" + self.commentOptions.nextPageToken;
+                }   
+                else { 
+                    callback(self.util.AllErrors(21));
+                    return false;
+                }
+                
+            }
+            
+            else if (options.navigate == "prev") { 
+                if(self.commentOptions.prevPageToken) {
+                    navigate = "&pageToken=" + self.commentOptions.prevPageToken ;
+                }
+                else { 
+                    callback(self.util.AllErrors(21));
+                    return false;
+                }
+            }
         }
         
         
         options = self.util.deepExtend({}, defaults, options);
         
-        
-        
-        var myUrl= self.yt.apiUrl+"commentThreads?part=snippet&videoId="+options.videoId+"&maxesults="+options.maxResults+"&key="+self.yt.apikey; //+"&maxResults="+maxResults;
-       
-         console.log(myUrl);
-         self.util.ajaxGet({
+        var myUrl= self.yt.apiUrl+"commentThreads?part=snippet&videoId="+options.videoId+navigate+"&maxesults="+options.maxResults+"&key="+self.yt.apikey; //+"&maxResults="+maxResults;
+        self.util.debug(self,myUrl);
+
+        self.util.ajaxGet({
           url: myUrl,
           dataType: 'json',
           async: false,
           data: myData,
           success: function(data) {
-          var entries;
+            var entries;
+            var comments = {};
+            
+            self.util.debug(self,'Data success');
+            self.util.debug(self,data);
           
-          console.log(data);
-          entries= data.feed.entry;
-          comments.total=data.feed.openSearch$totalResults['$t'];
-          if(comments.total == 0) {return this.ErrorAll(13);}
-          comments.index=startindex;
-          for(i=0;i<25;i++)
-          {
-          comments[i]={};
-          //console.log(videos);
-          comments[i].title = entries[i].title['$t'];
-          comments[i].content = entries[i].content['$t'];
-          comments[i].publishedAt=entries[i].published['$t'];
-          comments[i].authorName=entries[i].author[0].name['$t'];
-          comments[i].authorUri=entries[i].author[0].uri['$t'];
-          comments[i].authorId=entries[i].author[0].yt$userId['$t'];
+            if(typeof data === "string") {
+              data = JSON.parse(data);
+            }
+            
+            comments.raw = data;
           
-          
+            if(data.items) {
+              comments.resultsPerPage = data.pageInfo.resultsPerPage;
+              comments.totalResults = data.pageInfo.totalResults;
+              comments.nextPageToken = data.nextPageToken;
+              comments.prevPageToken = data.prevPageToken;
+              self.commentOptions.nextPageToken = data.nextPageToken;
+              self.commentOptions.prevPageToken = data.prevPageToken;
+              
+              if(comments.totalResults == 0) {
+                return this.ErrorAll(13);
+              }
+              
+              //comments.index = startindex;
+              
+              comments.items = [];
+              
+              for(i=0; i<comments.resultsPerPage; i++) {
+                comments.items[i] = data.items[i].snippet.topLevelComment.snippet;
+              }
+              callback(null, comments);
+              return true;
+             }
+             callback(self.util.AllErrors(404), comments);
+             return false;
           }
-          
-          self.comments =comments;
-          console.log(comments);
-          
-          return comments;
-          }
-         });
+       });
       }
         
         
     };
     
     $youtube.prototype.util = {
-        
+      
         AllErrors: function(errno) {
         
             var errors ={
@@ -387,7 +451,8 @@ if(typeof exports === 'object' ) {
                 "13":["OUT_OF_RANGE", "Less than zero values"],
                 "21":["NO_NEXT_PAGE", "No Next Page"],
                 "22":["NO_PREV_PAGE", "No Previous Page"],
-                "23":["INVALID_INDEX_OUT_OF_RANGE", "Please enter valid start index, it shoukd range from 1 to 999"]
+                "23":["INVALID_INDEX_OUT_OF_RANGE", "Please enter valid start index, it shoukd range from 1 to 999"],
+                "404": ["NOT_FOUND", 'not found']
             };
             
             var errormsg ={};
@@ -467,6 +532,18 @@ if(typeof exports === 'object' ) {
           }
         
           return out;
+        },
+        
+        debug: function(instance, msg) {
+          var self = instance;
+          
+          self.logs.push(msg);
+          
+          if(self.debug) {
+            console.log(msg);
+          }
+          
+          return true;
         }
     };
    

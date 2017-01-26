@@ -51,6 +51,13 @@ Getting the data
         }
         console.log(result);
     });
+
+
+Methods Available
+
+1. getdata
+2. search
+3. getComments
     
 
 Searching for Videos
@@ -63,6 +70,16 @@ Searching for Videos
         console.log(data);
     });
 
+Comments
+
+    youtube.getComments({videoId: "PMr2NRPdpH4"}, function(err, data){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(data);
+    });    
+
 ## Options
 
 
@@ -72,7 +89,7 @@ Searching for Videos
 2. part: "snippet,statistics,contentDetails"  // you can pass either of three orcombination or all
 
 
-#### output format 
+#### output format (getdata)
 
 You can get wide variety of data from `getdata` method and always youtube original data can be referred in `raw`
 
@@ -119,7 +136,7 @@ You can get wide variety of data from `getdata` method and always youtube origin
 4. navigate : "next" // would render next set of results as youtube only allows 50 videos at a time
 
 
-#### output format 
+#### output format (search)
 
 You can get wide variety of data from `search` method. Results of search will be returned in `videos` array and always youtube original data can be referred in `raw`
 
@@ -128,15 +145,52 @@ You can get wide variety of data from `search` method. Results of search will be
     prevPageToken:
     kind:
     
+### comments
 
+```
+youtube.getComments({videoId: "PMr2NRPdpH4"}, function(err, data){
+    if(err) {
+      console.log(err);
+      return false;
+    }
+    console.log(data);
+    nextComments();
+});
+
+// next set of comments
+function nextComments() {
+    youtube.getComments({videoId: "PMr2NRPdpH4", navigate: "next"}, function(err, data){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(data);
+    });
+}
+
+```        
+
+
+### output format  (getComments)
+
+You can get wide variety of data from `getComments` method. Results of comments will be returned in `items` array and always youtube original data can be referred in `raw`
+
+`items` array item usually have different values such as `textDisplay`, `authorDisplayName`, `authorProfileImageUrl`, `likeCount` etc
+
+    items : []
+    nextPageToken:
+    prevPageToken:
+    resultsPerPage:
+    raw:
+
+## Implemented Features
+
+[ x ] get Video Data
+[ x ] search for videos
+[ x ] get Comments
+[ x ] npm module
 
 ## Upcoming Plan
 
-[ ] Comments
-
 [ ] Related Videos
-
-[ ] npm module
-
-
 

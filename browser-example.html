@@ -1,11 +1,11 @@
 
 <html>
     <head>
-        <script type="text/javascript" src="yt-core.js" ></script>
+        <script type="text/javascript" src="yt.js" ></script>
     </head>
     <body>
         <script>
-        var youtube  = $youtube("API KEY"); //replace with your api key
+        var youtube  = $youtube("API KEY", true); //replace with your api key
         
         youtube.getdata({ videoId: "TlgqWeuhJj4"},function(err, result){
             if(err) {
@@ -29,6 +29,21 @@
               return false;
             }
             console.log(data);
+        });
+        
+         youtube.getComments({videoId: "PMr2NRPdpH4"}, function(err, data){
+            if(err) {
+              console.log(err);
+              return false;
+            }
+            //console.log(data);
+            youtube.getComments({videoId: "PMr2NRPdpH4", navigate: "next"}, function(err, data){
+                if(err) {
+                  console.log(err);
+                  return false;
+                }
+                //console.log(data);
+            });
         });
       
         </script>

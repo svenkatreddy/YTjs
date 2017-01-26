@@ -11,3 +11,11 @@ youtube.getdata({ videoId: "TlgqWeuhJj4"},function(err, result){
     }
     console.log(result);
 });
+
+youtube.getComments({ videoId: "TlgqWeuhJj4"},function(err, result){
+    if(err) {
+      console.log(err);
+      return false;
+    }
+    console.log(result);
+});
