@@ -15,9 +15,7 @@ No Jquery needed.
 
 Example
     
-    var ytJS = require('ytjs');
-
-    var youtube  = ytJS("API KEY");
+    var youtube = require('ytjs')("API KEY");
     
     youtube.getdata({ videoId: "TlgqWeuhJj4"},function(err, result){
         if(err) {
@@ -62,7 +60,17 @@ Methods Available
 3. getComments
     
 
-Searching for Videos
+### get video data (getdata)
+
+    youtube.getdata({ videoId: "TlgqWeuhJj4" },function(err, result){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(result);
+     });
+
+### Searching for Videos (search)
     
     youtube.search({keyword: "rihanna love", fullResults: 1, order: "relevance"}, function(err, data){
         if(err) {
@@ -72,7 +80,7 @@ Searching for Videos
         console.log(data);
     });
 
-Comments
+### Comments (getComments)
 
     youtube.getComments({videoId: "PMr2NRPdpH4"}, function(err, data){
         if(err) {
@@ -184,12 +192,22 @@ You can get wide variety of data from `getComments` method. Results of comments 
     prevPageToken:
     resultsPerPage:
     raw:
+    
+
+### debug mode
+
+Debug mode will print details to your console. you can enable debug mode during intialization by passing `true`
+
+    var youtube  = $youtube("API KEY", true);
 
 ## Implemented Features
 
 [ x ] get Video Data
+
 [ x ] search for videos
+
 [ x ] get Comments
+
 [ x ] npm module
 
 ## Upcoming Plan
