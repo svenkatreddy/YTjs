@@ -1,7 +1,9 @@
 YTjs
 ====
 
-Universal Youtube Javascript Library for Node JS and browser.
+Universal Youtube API v3 Javascript Library which provides efficient API methods.
+
+Universal Youtube Javascript Library for Node JS, AMD and browser.
 
 No Jquery needed.
 
