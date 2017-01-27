@@ -45,6 +45,14 @@
                 //console.log(data);
             });
         });
+        
+        youtube.getRelatedVideos({videoId: "PMr2NRPdpH4"}, function(err, data){
+            if(err) {
+              console.log(err);
+              return false;
+            }
+            console.log(data);
+        });
       
         </script>
     </body>

@@ -1,9 +1,7 @@
 YTjs
 ====
 
-Universal Youtube API v3 Javascript Library which provides efficient API methods.
-
-Universal Youtube Javascript Library for Node JS, AMD and browser.
+Youtube API v3 Universal Javascript Library for nodeJS, AMD and browser which provides easy API
 
 No Jquery needed.
 
@@ -60,6 +58,7 @@ Methods Available
 1. getdata
 2. search
 3. getComments
+4. getRelatedVideos
     
 
 ### get video data (getdata)
@@ -90,7 +89,17 @@ Methods Available
           return false;
         }
         console.log(data);
-    });    
+    });   
+    
+### Related videos (getRelatedVideos)
+
+    youtube.getRelatedVideos({videoId: "PMr2NRPdpH4"}, function(err, data){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(data);
+    });       
 
 ## Options
 
@@ -194,7 +203,26 @@ You can get wide variety of data from `getComments` method. Results of comments 
     prevPageToken:
     resultsPerPage:
     raw:
-    
+
+
+### Related videos (getRelatedVideos)
+
+    youtube.getRelatedVideos({videoId: "PMr2NRPdpH4"}, function(err, data){
+        if(err) {
+          console.log(err);
+          return false;
+        }
+        console.log(data);
+    });    
+
+### output format  (getRelatedVideos)
+
+You can get wide variety of data from `getRelatedVideos` method. Results of related videos will be returned in `videos` array and always youtube original data can be referred in `raw`
+
+    "videos" : []
+    nextPageToken:
+    prevPageToken:
+    kind:
 
 ### debug mode
 
@@ -212,7 +240,9 @@ Debug mode will print details to your console. you can enable debug mode during 
 
 [ x ] npm module
 
+[ x ] related videos
+
 ## Upcoming Plan
 
-[ ] Related Videos
+[ ] Please open an issue
 

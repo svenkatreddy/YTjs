@@ -179,7 +179,7 @@ if(typeof exports === 'object' ) {
             return false;
         }
         
-        if(!options.keyword) { 
+        if(!options.keyword && !options.extraparam) { 
             callback(self.util.AllErrors(2));
             return false;
         }
@@ -229,9 +229,13 @@ if(typeof exports === 'object' ) {
             }
         }
         
+       
+       if(options.keyword) {
+         options.keyword = "&q="+options.keyword;
+       }  
         
         
-       var myUrl = self.yt.apiUrl + "search?part=snippet"+options.navigate+"&q="+options.keyword+"&maxResults="+options.maxResults+"&order="+options.order+"&key="+self.yt.apikey+options.extraparam;
+       var myUrl = self.yt.apiUrl + "search?part=snippet"+options.navigate+"&maxResults="+options.maxResults+"&order="+options.order+"&key="+self.yt.apikey+options.extraparam;
        
        self.util.debug(self,myUrl);
        
@@ -434,6 +438,41 @@ if(typeof exports === 'object' ) {
              return false;
           }
        });
+      },
+      
+      getRelatedVideos: function (options, callback) {
+        var self = this;
+        var defaults = {
+          maxResults : 25,
+          type : "basic",
+          extraparam : "",
+          navigate: "",
+          nextPageToken: "",
+          prevPageToken: "",
+          startindex: 1,
+          videoId: "",
+        };
+        
+        
+        self.util.debug(self,'Method: getRelatedVideos');
+        self.util.debug(self,options);
+        
+        
+        if(self.apikey === "") { 
+          callback(self.util.AllErrors(0));
+          return false;
+        }
+        
+        if(!options) {
+          callback(self.util.AllErrors(111));
+          return false;
+        }
+        
+        options = self.util.deepExtend({}, defaults, options);
+        
+        options.extraparam = options.extraparam + "&type=video&relatedToVideoId=" + options.videoId;
+        
+        self.search(options, callback);
       }
         
         

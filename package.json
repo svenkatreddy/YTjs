@@ -1,7 +1,7 @@
 {
   "name": "ytjs",
-  "version": "1.0.2",
-  "description": "Youtube client library for nodeJS, AMD and browser",
+  "version": "1.1.0",
+  "description": "Youtube API v3 Universal Javascript Library for nodeJS, AMD and browser which provides easy API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
